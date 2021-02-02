@@ -7,25 +7,27 @@ from Button import Button
 from VendingMachine import VendingMachine
 
 
+MOUSEMODE = True
+
 IMG = 'Snack-machine.jpg'
 RADIUS = 10
 COLOR = (0, 255, 0)
+FILL = -1
 
 
 class Mainloop(GazeObserver):
-    def __init__(self):
+    def __init__(self, enable_mouse):
         self.button = Button()
         self.eye = Eyetracker(1)
         self.eye.subscribe(self)
         self.eye.start()
         self.vendo = VendingMachine()
 
-        self.on_mouse_mode = True
+        self.on_mouse_mode = enable_mouse
         self.mouse_coord = [0, 0]
 
-        # trigger
+        # confirm trigger
         self.is_nodding: bool = False
-        self.is_staring: bool = False
 
         # CALIBRATION
         self.calibration = Calibration()
@@ -60,15 +62,12 @@ class Mainloop(GazeObserver):
                        (255, 255, 255), -1)
             self.calibration.push_sample((gaze[0], gaze[1]), self.stim_pos[self.current_stim])
         else:
-            # calibration_img = cv2.imread(IMG)
             gaze = self.mouse_coord if self.on_mouse_mode else self.calibration.apply_calibration((gaze[0], gaze[1]))
             self.smoother.append(gaze)
-
             gaze = self.smoother.get_mean()
-            # draw the vending machine gui
-            calibration_img = self.vendo.draw(gaze, self.is_nodding, self.is_staring)
+            calibration_img = self.vendo.draw(gaze, self.is_nodding)
             # draw current gaze loc
-            cv2.circle(calibration_img, (int(gaze[0]), int(gaze[1])), RADIUS, COLOR, -1)
+            cv2.circle(calibration_img, (int(gaze[0]), int(gaze[1])), RADIUS, COLOR, FILL)
         cv2.imshow("stimulus", calibration_img)
 
         key = cv2.waitKey(1)
@@ -89,17 +88,14 @@ class Mainloop(GazeObserver):
         if not self.calibration.is_calibrating:
             cv2.setMouseCallback("stimulus", click_cal)
 
-    # do if event
+    # ===================== event triggers =====================
     def click_calibrate(self, event, x, y, gaze):
         if event == cv2.EVENT_LBUTTONDOWN:
             self.calibration.push_sample((gaze[0], gaze[1]), [x, y])
             self.calibration.calibrate()
             print("New calibration point at", x, y)
-            with open('aoi_locs.txt', 'a') as file:
-                file.write(' '.join([str(x), str(y)])+'\n')
 
         self.mouse_coord = [x, y]
-
 
     def update_nod(self, is_nodding: bool):
         if self.is_nodding is not is_nodding:
@@ -107,12 +103,6 @@ class Mainloop(GazeObserver):
             update_text = "NOT " if not is_nodding else ""
             print("YOU'RE {}NODDING!".format(update_text))
 
-    def update_stare(self, is_staring: bool):
-        if self.is_staring is not is_staring:
-            self.is_staring = is_staring
-            update_text = "NOT " if not is_staring else ""
-            print("YOU'RE {}NODDING!".format(update_text))
 
-
-main = Mainloop()
+main = Mainloop(MOUSEMODE)
 
