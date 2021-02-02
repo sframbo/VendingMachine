@@ -2,10 +2,10 @@ import numpy as np
 import cv2
 import itertools
 
-IMG = 'Snack-machine.jpg'
-L1 = cv2.imread('load1.png')
-L2 = cv2.imread('load2.png')
-L3 = cv2.imread('load3.png')
+IMG = 'images/Snack-machine.jpg'
+L1 = cv2.imread('images/load1.png')
+L2 = cv2.imread('images/load2.png')
+L3 = cv2.imread('images/load3.png')
 loadframe = itertools.cycle([L1, L2, L3])
 DWELL_THRESHOLD = 5
 WAIT_LIMIT = 10
@@ -41,7 +41,7 @@ class Snack:
         return out
 
     def retrieve_snack_image(self):
-        img = cv2.imread('snack{}.png'.format(self.index))
+        img = cv2.imread('images/snack{}.png'.format(self.index))
         return img
 
 
@@ -159,7 +159,7 @@ class VendingMachine:
             if self.purchase_delay_count < 0:
                 self.waiting_on_nod = False
                 self.wait_count = 10
-                self.purchase_delay_count = 5
+                self.purchase_delay_count = 10
             
         return img
 

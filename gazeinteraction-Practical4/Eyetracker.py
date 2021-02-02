@@ -16,6 +16,8 @@ from abc import ABC
 from typing import Sequence
 import queue
 
+from NodDetector import NodDetector
+
 
 class GazeObserver(ABC):
     def update_gaze(self, gaze, frame):
@@ -50,6 +52,9 @@ class Eyetracker(threading.Thread):
         # Setup the camera
         self.video = Videosource(cameraID, self)
         self.video.start()
+
+        # Nod detector
+        self.nod_detector = NodDetector()
 
     def __del__(self):
         cv2.destroyAllWindows()
@@ -99,10 +104,14 @@ class Eyetracker(threading.Thread):
         display = frame.copy()
         faces, landmarks = self.face_detector.detect(Image.fromarray(frame))
 
-
-
         if len(faces) != 0:
-            print('face detected')
+
+            ###################################### NOD DETECTOR START
+            is_nodding = self.nod_detector.detect_nodding(frame)
+            for subscriber in self.subscribers:
+                subscriber.update_nod(is_nodding)
+            ###################################### NOD DETECTOR END
+
             for f, lm in zip(faces, landmarks):
                 # Confidence check
                 if f[-1] > 0.98:
