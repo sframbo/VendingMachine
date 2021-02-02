@@ -2,11 +2,13 @@ import numpy as np
 import cv2
 import itertools
 
-IMG = 'images/Snack-machine.jpg'
+IMG1 = 'images/Snack-machine.jpg'
+IMG2 = 'images/Snack-machine2.jpg'
 L1 = cv2.imread('images/load1.png')
 L2 = cv2.imread('images/load2.png')
 L3 = cv2.imread('images/load3.png')
 loadframe = itertools.cycle([L1, L2, L3])
+vendoframe = itertools.cycle([IMG1, IMG1, IMG2, IMG2])
 DWELL_THRESHOLD = 5
 WAIT_LIMIT = 10
 
@@ -109,7 +111,8 @@ class VendingMachine:
         return vendo
 
     def draw(self, gaze, is_nodding: bool):
-        img = self.draw_vending_machine(IMG)
+
+        img = self.draw_vending_machine()
         if self.waiting_on_nod:
             self.wait_count -= 1
             img = self.draw_confirm_select(img, is_nodding)
@@ -122,8 +125,9 @@ class VendingMachine:
         return img
 
     @staticmethod
-    def draw_vending_machine(img):
-        return cv2.imread(img)
+    def draw_vending_machine():
+        frame = next(vendoframe)
+        return cv2.imread(frame)
 
     def draw_snacks(self, cursor, vendo):
         for snack in self.snackbin:
