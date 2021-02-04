@@ -1,11 +1,9 @@
 import numpy as np
 import cv2
 import itertools
-from playsound import playsound
+import math
 
 
-PURCHASESFX = 'music/purchase.wav'
-HOVERSFX = 'music/hover.wav'
 IMG1 = 'images/Snack-machine.jpg'
 IMG2 = 'images/Snack-machine2.jpg'
 L1 = cv2.imread('images/load1.png')
@@ -43,6 +41,58 @@ LOCATIONS = [
             , [870, 321]
             , [992, 321]
     ]
+place_text = lambda message, img, x_offset, y_offset=0: cv2.putText(img, message, (
+            int(img.shape[1] / 2) + x_offset, int(img.shape[0] / 2) - 250 + y_offset), cv2.FONT_HERSHEY_SIMPLEX, 1.0,
+                                                           (255, 255, 255),
+                                                           3)
+
+
+class Orbit:
+    def __init__(self):
+        self.time_window: int = 50
+        self.threshold: float = .8
+
+        self.radius: int = 400
+        self.angle = 0
+
+        # both target_pos and cursor_pos must be updated at the same time
+        self.target_pos: list = []
+        self.gaze_pos: list = []
+
+    def calculate_pearson(self):
+        assert len(self.target_pos) != 0
+        assert len(self.gaze_pos) != 0
+
+        self.target_pos = np.array(self.target_pos)
+        self.gaze_pos = np.array(self.gaze_pos)
+        min_coeff = np.min([np.corrcoef(self.target_pos[:, i], self.gaze_pos[:, i]) for i in range(2)])
+        return min_coeff
+
+    def track_orbit(self, gaze, target):
+        if self.time_window <= 0:
+            out = self.calculate_pearson() > self.threshold
+            self.reset()
+            print("Coefficient", out)
+            return out
+        else:
+            self.time_window -= 1
+            self.target_pos.append(target)
+            self.gaze_pos.append(gaze)
+            return None
+
+    def reset(self):
+        self.time_window: int = 50
+        self.target_pos: list = []
+        self.gaze_pos: list = []
+
+    def calculate_next_pos(self):
+        step = .1
+        x = int(self.radius*math.cos(self.angle))
+        y = int(self.radius*math.sin(self.angle))
+        self.angle += step
+        self.angle %= 360
+
+        return x, y
 
 
 class Snack:
@@ -106,15 +156,16 @@ class VendingMachine:
 
         if self.waiting_on_nod:
             self.draw_confirm_select(img, is_nodding)
-        elif self.purchase_confirmed and self.purchase_delay_count > 0:
-            self.draw_purchase()
         elif self.is_orbiting:
             # when purchase confirmed, self.is_orbiting is toggled true
-            target_pos = self.draw_orbit()
+            target_pos = self.draw_orbit(img)
             self.update_orbit_details(target_pos, gaze)
         elif self.is_paying:
-            # draw a text like "PAYMENT SUCCESSFUL!"
-            ...
+            self.draw_purchase(img)
+            self.purchase_delay_count -= 1
+            if self.purchase_delay_count <= 0:
+                self.purchase_delay_count = 5
+                self.is_paying = False
         else:
             self.draw_if_hovered(gaze, img)
 
@@ -149,11 +200,19 @@ class VendingMachine:
             self.nod_wait_count = 10
 
         if is_confirming:
-            self.purchase_delay_count -= 1
-            if self.purchase_delay_count < 0:
-                self.waiting_on_nod = False
-                self.nod_wait_count = 10
-                self.purchase_delay_count = 10
+            self.waiting_on_nod = False
+            self.nod_wait_count = 10
+            self.is_orbiting = True
+
+        # if is_confirming:
+        #     self.purchase_delay_count -= 1
+        #     if self.purchase_delay_count < 0:
+        #         self.waiting_on_nod = False
+        #         self.nod_wait_count = 10
+        #         self.purchase_delay_count = 10
+        #
+        #     self.waiting_on_nod = False
+        #     self.is_orbiting = True
 
     @staticmethod
     def draw_vending_machine():
@@ -181,68 +240,30 @@ class VendingMachine:
         img[startingpt[0]: startingpt[0] + snack_img.shape[0],
             startingpt[1]: startingpt[1] + snack_img.shape[1]] = snack_img
 
-        place_text = lambda message, x_offset: cv2.putText(img, message, (
-            int(img.shape[1] / 2) + x_offset, int(img.shape[0] / 2) - 250), cv2.FONT_HERSHEY_SIMPLEX, 1.0,
-                                                           (255, 255, 255),
-                                                           3)
         self.update_confirm_details(is_confirming)
 
         if not is_confirming:
-            place_text("Purchase item? [Nod]", -175)
-        else:
-            self.waiting_on_nod = False
-            place_text("Item purchased!", -130)
-            self.activate_purchase()
+            place_text("Purchase item? [Nod]", img, -175)
+        # else:
+            # place_text("Item purchased!", -130)
+            # self.activate_purchase()
 
-    def draw_purchase(self):
-        self.purchase_delay_count -= 1
+    def draw_purchase(self, img):
         # draw something cool too i guess
+        place_text("PAYMENT SUCCESSFUL!", img, -200, 500)
 
     def activate_purchase(self):
         self.purchase_confirmed = True
-        playsound(PURCHASESFX)
 
-    def draw_orbit(self):
-        ...
-        return 0
+    def draw_orbit(self, img):
+        offset_y = int(img.shape[0]/2)
+        offset_x = int(img.shape[1] / 2)
+        x, y = self.orbiter.calculate_next_pos()
 
-
-class Orbit:
-    def __init__(self):
-        self.time_window: int = 5
-        self.threshold: float = .8
-
-        # both target_pos and cursor_pos must be updated at the same time
-        self.target_pos: list = []
-        self.gaze_pos: list = []
-
-    def calculate_pearson(self):
-        assert len(self.target_pos) != 0
-        assert len(self.gaze_pos) != 0
-
-        self.target_pos = np.array(self.target_pos)
-        self.gaze_pos = np.array(self.gaze_pos)
-
-        min_coeff = np.min([np.corrcoef(self.target_pos[:, i], self.gaze_pos[:, i]) for i in range(2)])
-
-        return min_coeff
-
-    def track_orbit(self, gaze, target):
-        if self.time_window <= 0:
-            out = self.calculate_pearson() > self.threshold
-            self.reset()
-            return out
-        else:
-            self.time_window -= 1
-            self.target_pos.append(target)
-            self.gaze_pos.append(gaze)
-            return None
-
-    def reset(self):
-        self.time_window: int = 5
-        self.target_pos: list = []
-        self.gaze_pos: list = []
-
+        x += offset_x
+        y += offset_y
+        cv2.circle(img, (x, y), 50, (255,255,255), -1)
+        return x, y
 
 
 

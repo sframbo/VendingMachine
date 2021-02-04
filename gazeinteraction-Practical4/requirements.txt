@@ -7,4 +7,3 @@ matplotlib
 torchvision
 python-dateutil
 opencv-contrib-python
-playsound
