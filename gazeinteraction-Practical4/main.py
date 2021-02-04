@@ -5,9 +5,9 @@ import numpy as np
 from SmoothingFilter import RingBuffer
 from Button import Button
 from VendingMachine import VendingMachine
+from NodDetector import NodDetector
 
-
-MOUSEMODE = True
+MOUSEMODE = False
 
 IMG = 'Snack-machine.jpg'
 RADIUS = 10
@@ -16,11 +16,11 @@ FILL = -1
 
 
 class Mainloop(GazeObserver):
-    def __init__(self, enable_mouse):
-        self.button = Button()
-        self.eye = Eyetracker(1)
+    def __init__(self, enable_mouse, nod_threshod=20):
+        self.eye = Eyetracker(1, NodDetector(nod_threshod))
         self.eye.subscribe(self)
         self.eye.start()
+
         self.vendo = VendingMachine()
 
         self.on_mouse_mode = enable_mouse
@@ -68,6 +68,8 @@ class Mainloop(GazeObserver):
             calibration_img = self.vendo.draw(gaze, self.is_nodding)
             # draw current gaze loc
             cv2.circle(calibration_img, (int(gaze[0]), int(gaze[1])), RADIUS, COLOR, FILL)
+        cv2.namedWindow("stimulus", cv2.WND_PROP_FULLSCREEN)
+        cv2.setWindowProperty("stimulus", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
         cv2.imshow("stimulus", calibration_img)
 
         key = cv2.waitKey(1)
@@ -81,9 +83,9 @@ class Mainloop(GazeObserver):
         if key & 0xFF == ord('n'):
             self.is_nodding = not self.is_nodding
             print("is_nodding", self.is_nodding)
-        if key & 0xFF == ord('h'):
-            self.is_staring = not self.is_staring
-            print("is_staring", self.is_staring)
+        if key & 0xFF == ord('m'):
+            self.toggle_mouse_control()
+            print("Mouse control toggled", self.on_mouse_mode)
 
         if not self.calibration.is_calibrating:
             cv2.setMouseCallback("stimulus", click_cal)
@@ -102,6 +104,10 @@ class Mainloop(GazeObserver):
             self.is_nodding = is_nodding
             update_text = "NOT " if not is_nodding else ""
             print("YOU'RE {}NODDING!".format(update_text))
+
+    def toggle_mouse_control(self):
+        self.on_mouse_mode = not self.on_mouse_mode
+
 
 
 main = Mainloop(MOUSEMODE)

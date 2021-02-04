@@ -25,7 +25,7 @@ class GazeObserver(ABC):
 
 
 class Eyetracker(threading.Thread):
-    def __init__(self, cameraID):
+    def __init__(self, cameraID, nod_detector):
         super().__init__()
         print('Loading MobileFaceGaze model...')
         device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -54,7 +54,7 @@ class Eyetracker(threading.Thread):
         self.video.start()
 
         # Nod detector
-        self.nod_detector = NodDetector()
+        self.nod_detector: NodDetector = nod_detector
 
     def __del__(self):
         cv2.destroyAllWindows()
