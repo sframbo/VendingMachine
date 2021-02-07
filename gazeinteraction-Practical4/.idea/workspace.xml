@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="bf7f919f-bf1f-455b-b32e-4998c8157bf3" name="Default Changelist" comment="" />
+    <list default="true" id="bf7f919f-bf1f-455b-b32e-4998c8157bf3" name="Default Changelist" comment="implemented NodDetection">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,12 +19,19 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
   <component name="ProjectId" id="1nsxREh9VsUZW8yW4lrkUzZiVWo" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\bam\Documents\STUDY\7. Sem\Eye-Based HCI\gazeinteraction-\gazeinteraction-Practical4\images" />
       <recent name="C:\Users\bam\Documents\STUDY\7. Sem\Eye-Based HCI\gazeinteraction-\gazeinteraction-Practical4" />
     </key>
   </component>
@@ -75,6 +86,81 @@
       <option name="presentableId" value="Default" />
       <updated>1612192589722</updated>
     </task>
+    <task id="LOCAL-00001" summary="working on vending machine gui">
+      <created>1612270019085</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1612270019085</updated>
+    </task>
+    <task id="LOCAL-00002" summary="working on vending machine gui">
+      <created>1612278011319</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1612278011319</updated>
+    </task>
+    <task id="LOCAL-00003" summary="implemented NodDetection">
+      <created>1612279826315</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1612279826341</updated>
+    </task>
+    <task id="LOCAL-00004" summary="implementing smooth pursuit">
+      <created>1612455038147</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1612455038147</updated>
+    </task>
+    <task id="LOCAL-00005" summary="implemented smooth pursuit">
+      <created>1612467802040</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1612467802040</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="requirements.txt" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="working on vending machine gui" />
+    <MESSAGE value="implemented NodDetection" />
+    <MESSAGE value="implementing smooth pursuit" />
+    <MESSAGE value="implemented smooth pursuit" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented smooth pursuit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/VendingMachine.py</url>
+          <line>128</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/VendingMachine.py</url>
+          <line>257</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

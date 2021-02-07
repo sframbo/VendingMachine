@@ -109,6 +109,6 @@ class Mainloop(GazeObserver):
         self.on_mouse_mode = not self.on_mouse_mode
 
 
-
-main = Mainloop(MOUSEMODE)
+if __name__ == "__main__":
+    main = Mainloop(MOUSEMODE)
 
